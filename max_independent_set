@@ -1,0 +1,123 @@
+Perfect! You're now aiming to find the **Maximum Independent Set (MIS)** — the largest set of non-conflicting activities — using the **conflict graph**.
+
+Let’s now build the complete **C++ code** to solve the **Maximum Independent Set** on the **conflict graph**, where each activity is a node and an edge represents a conflict (overlap in time).
+
+---
+
+### ✅ Assumptions:
+
+We'll take `n` activities as input, each with `start` and `end` times.
+We'll then:
+
+1. Build the conflict graph.
+2. Try all subsets of activities to find the **maximum independent set** (i.e., no pair overlaps).
+
+---
+
+### 📦 C++ Code: Brute Force Maximum Independent Set (for small `n ≤ 20`)
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct Activity {
+    int start, end;
+};
+
+int n;
+vector<Activity> activities;
+vector<vector<bool>> conflict;
+
+// Function to check if two activities conflict
+bool isConflict(Activity a, Activity b) {
+    return !(a.end <= b.start || b.end <= a.start);
+}
+
+int main() {
+    cout << "Enter number of activities: ";
+    cin >> n;
+    activities.resize(n);
+
+    cout << "Enter start and end time of each activity:\n";
+    for (int i = 0; i < n; ++i) {
+        cin >> activities[i].start >> activities[i].end;
+    }
+
+    // Build the conflict matrix (adjacency matrix)
+    conflict.resize(n, vector<bool>(n, false));
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            if (i != j && isConflict(activities[i], activities[j]))
+                conflict[i][j] = true;
+
+    // Try all subsets to find the maximum independent set
+    int maxSetSize = 0;
+    vector<int> bestSet;
+
+    for (int mask = 0; mask < (1 << n); ++mask) {
+        vector<int> subset;
+        bool valid = true;
+
+        for (int i = 0; i < n; ++i) {
+            if (mask & (1 << i)) {
+                for (int j : subset) {
+                    if (conflict[i][j]) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) subset.push_back(i);
+                else break;
+            }
+        }
+
+        if (valid && subset.size() > maxSetSize) {
+            maxSetSize = subset.size();
+            bestSet = subset;
+        }
+    }
+
+    // Output the result
+    cout << "\nMaximum number of non-conflicting activities: " << maxSetSize << endl;
+    cout << "Activities selected (0-based index): ";
+    for (int idx : bestSet)
+        cout << idx << " ";
+    cout << endl;
+
+    return 0;
+}
+```
+
+---
+
+### 🔎 Sample Input:
+
+```
+Enter number of activities: 5
+Enter start and end time of each activity:
+1 4
+3 5
+0 6
+5 7
+8 9
+```
+
+### ✅ Output:
+
+```
+Maximum number of non-conflicting activities: 3
+Activities selected (0-based index): 0 3 4
+```
+
+This is the **Maximum Independent Set** in the conflict graph.
+
+---
+
+Would you like:
+
+* the code explained line by line?
+* the solution for a specific input (e.g., from your image)?
+* to make it more optimized or interactive?
+
+Let me know how you'd like to proceed.
